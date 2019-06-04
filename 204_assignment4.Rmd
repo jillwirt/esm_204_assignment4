@@ -193,7 +193,18 @@ WTP_D <- (D_abatement*(300-0) + D_intercept)
 
 ```{r #3a}
 # 3a) Cap on Carbon: Each sector (A, B, C) must cut is carbon emissions by 100 tons (thus reducing total emissions from 600 down to 300). 
+#integrate marginal abatement curve for each sector from 0-100 
 
+acostcap<- integrate(sectorapff, 0, 100)
+#2019.762
+
+bcostcap<- integrate(sectorbpff, 0, 100)
+#1925.491 
+
+ccostcap<- integrate(sectorcpff, 0, 100)
+#2743.63
+
+totalcostcap <- acostcap$value + bcostcap$value + ccostcap$value
 
 #find total cost under new policy: A would go to 80, B would go to 100, C would go to 120
 
@@ -204,6 +215,11 @@ WTP_D <- (D_abatement*(300-0) + D_intercept)
 ```{r #3b}
 # 3b) Tax on Carbon: To emit a ton of carbon in country X, you must pay a tax of $t. You will need to find the tax that accomplishes the desired reduction. 
 
+
+#aggregate marginal abatement cost 
+dividedby<- (1/A_abatement+1/B_abatement+1/C_abatement)/3
+intercept<- ((aregress$coefficients[1]/-aregress$coefficients[2])-B_intercept/B_abatement +C_intercept/-C_abatement)/3
+aggmca <- function(x){(x+(-intercept))/dividedby}
 
 
 
