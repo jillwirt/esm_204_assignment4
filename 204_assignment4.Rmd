@@ -15,3 +15,48 @@ sector_data <- read_csv("HW4Data.csv")
 
 ```
 
+```{r}
+aregress <- lm(MC_A ~ Abatement, data= sector_data)
+sectorapff=function(x){aregress$coefficients[2]*x +aregress$coefficients[1]}
+
+bregress <-lm(MC_B ~ Abatement, data= sector_data)
+sectorbpff=function(x){bregress$coefficients[2]*x +bregress$coefficients[1]}
+
+cregress <-lm(MC_C ~ Abatement, data= sector_data)
+sectorcpff=function(x){cregress$coefficients[2]*x +cregress$coefficients[1]}
+
+dregress <-lm(MC_D ~ Abatement, data= sector_data)
+sectordpff=function(x){dregress$coefficients[2]*x +dregress$coefficients[1]}
+
+
+newdata<- sector_data %>% 
+  mutate(A2=(Abatement)*(Abatement))
+
+aquad <- lm(MC_A ~ Abatement + A2, data= newdata)
+quada=function(x){aquad$coefficients[2]*x +aquad$coefficients[3]*x^2+ aquad$coefficients[1]}
+
+bquad <-lm(MC_B ~ Abatement + A2, data= newdata)
+quadb=function(x){bquad$coefficients[2]*x +bquad$coefficients[3]*x^2+ bquad$coefficients[1]}
+
+cquad <-lm(MC_C ~ Abatement + A2, data= newdata)
+quadc=function(x){cquad$coefficients[2]*x +cquad$coefficients[3]*x^2+ cquad$coefficients[1]}
+
+dquad <-lm(MC_D ~ Abatement + A2, data= newdata)
+quadd=function(x){dquad$coefficients[2]*x +dquad$coefficients[3]*x^2+ dquad$coefficients[1]}
+
+
+#c and d have better fit with a quad function
+
+predicteda <-newdata %>% 
+   mutate(linear= predict(aregress, newdata= newdata, type="response")) %>% 
+  mutate(quad= predict(aquad, newdata= newdata, type="response")) %>% 
+  select(Abatement, MC_A, linear, quad, A2)
+
+plota <- ggplot(predicteda, aes(x=Abatement, y=MC_A)) +
+  geom_point()+
+  geom_smooth(method= lm)+
+  theme_classic() 
+
+plota 
+```
+
