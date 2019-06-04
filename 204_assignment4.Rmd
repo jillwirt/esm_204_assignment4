@@ -195,7 +195,7 @@ WTP_D <- (D_abatement*(300-0) + D_intercept)
 # 3a) Cap on Carbon: Each sector (A, B, C) must cut is carbon emissions by 100 tons (thus reducing total emissions from 600 down to 300). 
 
 
-
+#find total cost under new policy: A would go to 80, B would go to 100, C would go to 120
 
 
 
@@ -211,7 +211,7 @@ WTP_D <- (D_abatement*(300-0) + D_intercept)
 ```
 
 ```{r #3c}
-# 3c) Cap and trade: Each sector (A, B, C) is allocated carbon permits equal to their current emissions minus 100 (same as in (a) above), thus achieving the total reduction of 300. Them these three sectors are allowed to trade with each other. You will need to derive the outcome of that trading.
+# 3c) Cap and trade: Each sector (A, B, C) is allocated carbon permits equal to their current emissions minus 100 (same as in (a) above), thus achieving the total reduction of 300. Then these three sectors are allowed to trade with each other. You will need to derive the outcome of that trading.
 
 
 
