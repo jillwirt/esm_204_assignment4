@@ -218,11 +218,12 @@ totalcostcap <- acostcap$value + bcostcap$value + ccostcap$value
 
 
 #aggregate marginal abatement cost 
-dividedby<- (1/A_abatement+1/B_abatement+1/C_abatement)/3
-intercept<- ((aregress$coefficients[1]/-aregress$coefficients[2])-B_intercept/B_abatement +C_intercept/-C_abatement)/3
+dividedby<- (1/A_abatement+1/B_abatement+1/C_abatement)
+intercept<- ((aregress$coefficients[1]/-aregress$coefficients[2])-B_intercept/B_abatement +C_intercept/-C_abatement)
 aggmca <- function(x){(x+(-intercept))/dividedby}
-carbonprice <- function(x){aggmca(300)}
-#take aggmca (300) to get price: 114.0445
+carbonprice <- {aggmca(300)}
+
+#take aggmca (300) to get price: $39.4
 
 #plot to get tax 
 
