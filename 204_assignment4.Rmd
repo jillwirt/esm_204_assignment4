@@ -221,7 +221,7 @@ totalcostcap <- acostcap$value + bcostcap$value + ccostcap$value
 dividedby<- (1/A_abatement+1/B_abatement+1/C_abatement)
 intercept<- ((aregress$coefficients[1]/-aregress$coefficients[2])-B_intercept/B_abatement +C_intercept/-C_abatement)
 aggmca <- function(x){(x+(-intercept))/dividedby}
-carbonprice <- {aggmca(300)}
+carbonprice <- function(x){aggmca(300)}
 
 #take aggmca (300) to get price: $39.4
 
@@ -242,17 +242,25 @@ abatementgraph
 taxrevenue<- 300*aggmca(300)
 
 #intersection of c with carbonprice 
-intersectc<-curve_intersect(carbonprice, sectorcpff, empirical = FALSE, domain=c(0,200)) 
+intersectc <- curve_intersect(carbonprice, sectorcpff, empirical = FALSE, domain=c(0,200)) 
 #cost for sector c is integral of the curve up until x intercept 
 
 ctaxcost<- integrate(sectorcpff, 0, intersectc$x)
+# ctaxcost = 904.9294
 
 #intersection of a with carbonprice 
 intersecta<-curve_intersect(carbonprice, sectorapff, empirical = FALSE, domain=c(0,300)) 
 #cost for sector a is integral of the curve up until x intercept 
 
 ataxcost<- integrate(sectorapff, 0, intersecta$x) 
+# ataxcost = 1282.612
 
+#intersection of b with carbonprice
+intersectb <- curve_intersect(carbonprice, sectorbpff, empirical = FALSE, domain=c(0,300)) 
+#cost for sector b is integral of the curve up until x intercept 
+
+btaxcost <- integrate(sectorbpff, 0, intersectb$x)
+# btaxcost = 3692.271
 ```
 
 ```{r #3c}
