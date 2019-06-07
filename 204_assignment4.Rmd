@@ -247,6 +247,14 @@ cpoltax <- curve_intersect(carbonprice, demand_C, empirical = FALSE, domain=c(0,
 cpolbenefittax<- integrate(demand_C, 0, cpoltax$x)
 cnetbentax<- cpolbenefittax$value - (cpoltax$x*cpoltax$y)
 
+apoltax <- curve_intersect(carbonprice, demand_A, empirical = FALSE, domain=c(0,200)) # how much they are going to pollute, x= 96.66511
+apolbenefittax<- integrate(demand_A, 0, apoltax$x)
+anetbentax<- apolbenefittax$value - (apoltax$x*apoltax$y)
+
+
+bpoltax <- curve_intersect(carbonprice, demand_B, empirical = FALSE, domain=c(0,200)) # how much they are going to pollute, x= 48.50442
+bpolbenefittax<- integrate(demand_B, 0, bpoltax$x)
+bnetbentax<- bpolbenefittax$value - (bpoltax$x*bpoltax$y)
 #intersection of c with carbonprice 
 intersectc <- curve_intersect(carbonprice, sectorcpff, empirical = FALSE, domain=c(0,200)) 
 #cost for sector c is integral of the curve up until x intercept 
@@ -258,6 +266,7 @@ ctaxcost<- integrate(sectorcpff, 0, intersectc$x)
 intersecta<-curve_intersect(carbonprice, sectorapff, empirical = FALSE, domain=c(0,300)) 
 #cost for sector a is integral of the curve up until x intercept 
 
+
 ataxcost<- integrate(sectorapff, 0, intersecta$x) 
 # ataxcost = 1282.612
 
@@ -267,6 +276,9 @@ intersectb <- curve_intersect(carbonprice, sectorbpff, empirical = FALSE, domain
 
 btaxcost <- integrate(sectorbpff, 0, intersectb$x)
 # btaxcost = 3692.271
+
+#totaltax cost (unsure about this)
+totaltaxcost <- ataxcost$value + btaxcost$value +ctaxcost$value
 ```
 
 ```{r #3c}
