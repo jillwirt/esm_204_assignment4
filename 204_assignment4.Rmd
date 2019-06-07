@@ -306,38 +306,55 @@ btradebenefit <- bpolbenefittax$value + cpermitneed*aggmca(300)+ apermitneed*agg
 #aggregate demand curve of a, b, c, d, 
 
 aggdemand<- function(q){(-1/11.88819)*q+59.27741}
+sum<- ((D_abatement*300+D_intercept)/D_abatement)+ ((C_abatement*220+C_intercept)/C_abatement)+ ((B_abatement*200+B_intercept)/B_abatement)+ ((A_abatement*180+A_intercept)/A_abatement)
+suminverslopes<- (1/A_abatement)+(1/B_abatement)+ (1/C_abatement)+(1/D_abatement)
 
-aggdemand(300)# new carbon price is 34.04228 
 
-newcarbonprice<- function(x){x=aggdemand(300)}
+aggdemand2<- function(x){(sum/suminverslopes)-(1/suminverslopes)*x}
+
+#new aggregate supply curve of a, b, c, d
+
+sumintoverslope<- A_intercept/A_abatement+ B_intercept/B_abatement + C_intercept/C_abatement+ D_intercept/D_abatement
+newaggmca<- function(x){(x+sumintoverslope)/suminverslopes}
+
+newaggmca(300)# new carbon price is 29.80249
+
+newcarbonprice<- function(x){x=newaggmca(300)}
 newainter<- curve_intersect(newcarbonprice, demand_A, empirical = FALSE, domain=c(0,200))
 anewpolbenefittax<- integrate(demand_A, 0, newainter$x)
-anewnetbentax<- anewpolbenefittax$value - (newainter$x*newainter$y)
+
 
 newbinter<- curve_intersect(newcarbonprice, demand_B, empirical = FALSE, domain=c(0,200))
 bnewpolbenefittax<- integrate(demand_B, 0, newbinter$x)
-bnewnetbentax<- bnewpolbenefittax$value - (newbinter$x*newbinter$y)
+
 
 newcinter<- curve_intersect(newcarbonprice, demand_C, empirical = FALSE, domain=c(0,200))
 cnewpolbenefittax<- integrate(demand_C, 0, newcinter$x)
-cnewnetbentax<- cnewpolbenefittax$value - (newcinter$x*newcinter$y)
+
 
 newdinter<- curve_intersect(newcarbonprice, demand_D, empirical = FALSE, domain=c(0,300))
+dnewpolbenefittax<- integrate(demand_D, 0, newdinter$x)
 
 a2permitneed <- newainter$x-80
 
 c2permitneed <- newcinter$x - 120
 
-a2permitneed+c2permitneed #need 67.69892 permits 
+a2permitneed+c2permitneed #need 80.45801 permits 
 
-(300-newdinter$x)+(100-newbinter$x)# have 118.1023 permits to sell
+(300-newdinter$x)+(100-newbinter$x)# have 80.45 permits to sell
 
-#too many permits in market, not worth it to invite country Y to carbon trade market because either B would be left with permits or D would
+
+
+anewtradebenefit <-anewpolbenefittax$value - a2permitneed*newaggmca(300)
+
+cnewtradebenefit <-cnewpolbenefittax$value - c2permitneed*newaggmca(300)
+
+bnewtradebenefit<- bnewpolbenefittax$value + (100-newbinter$x)*newaggmca(300)
 
 
 dlonelybenefit<- integrate(demand_D, 0,300)
 
-dtradebenefit <- dlonelybenefit$value-(300-newdinter$x)*aggdemand(300) # if they sell all permits, not even worth it because they make 14602.99 by themselves and only 11413.29 if they trade and sell all. 
+dtradebenefit <- dnewpolbenefittax$value +(300-newdinter$x)*newaggmca(300) # also worth it for D because by trading they benefit 15381.31 whereas bythemselves they benefit 14602.99
 
 ```
 
@@ -347,7 +364,7 @@ dtradebenefit <- dlonelybenefit$value-(300-newdinter$x)*aggdemand(300) # if they
 ```{r #5a}
 # 5a) In a carbon cap and trade market that only covers sectors in country X, how much local air pollution would you expect in Country X? Country Y?
 
-
+#In a cap & trade market that only covers sectors in country X, you would expect country X to emit 300 and therefore have 300 local air pollution units, and since country Y (with only sector D) wouldn't be regulated, they would also pollute 300 units. 
 
 
 
@@ -356,9 +373,12 @@ dtradebenefit <- dlonelybenefit$value-(300-newdinter$x)*aggdemand(300) # if they
 ```{r #5b}
 # 5b) If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and Country Y?
 
+#Country X will pollute newainter$x+newbinter$x+newcinter$x aka 377.3869 units 
+#Country Y will pollute newdinter$x #222.6131
 
 
-
+totalxemissions <- newainter$x+newbinter$x+newcinter$x 
+totalyemissions<- newdinter$x
 
 
 ```
@@ -366,7 +386,7 @@ dtradebenefit <- dlonelybenefit$value-(300-newdinter$x)*aggdemand(300) # if they
 ```{r #5c}
 # 5c) What advice can you give country X and country Y about the desirability of allowing international trade of carbon emissions credits?
 
-
+#Allowing international trade of carbon emissions credits will lower the cost of a single carbon credit, leading to the most economically efficient sollution. However this doesn't capture the impacts of local air pollution. In country X for example, entering an international carbon cap and trade market will actually lead to a higher impact of local air pollution (377 vs 300) whereas for country Y, entering the international carbon cap and trade market will lead to lower local air pollution (222 vs 300). Country Y will only see benefits to entering an international carbon cap & trade market whereas Country X will have decide if it wants to be more economically efficient but also suffer more from air pollution. 
 
 
 
