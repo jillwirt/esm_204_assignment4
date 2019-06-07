@@ -83,6 +83,21 @@ D_intercept <- dregress$coefficients[1]
 
 ```
 
+```{r}
+# Marginal abatement cost function plot
+
+sectorabatement <- ggplot(sector_data)+
+  stat_function(fun=sectorapff, colour="red", show.legend = TRUE)+
+  stat_function(fun=sectorbpff, colour="green", show.legend = TRUE)+
+  stat_function(fun=sectorcpff, colour="orange", show.legend = TRUE)+
+  stat_function(fun=sectordpff, colour="blue", show.legend = TRUE) +
+  scale_x_continuous(expand=c(0,0), breaks=seq(0, 400, by=50), limits=c(0,410))+
+  labs(x = "Abatement (tons)", y = "Marginal Cost of Abatement ($/ton)", title = "Marginal Cost of Abatement for Sectors A, B, C, and D") +
+  theme_classic() 
+
+sectorabatement
+
+```
 
 
 2. Using these models and the current level of carbon emissions, derive each sector’s demand curve for carbon emissions. In other words, how much would each sector be willing to pay for the right to pollute the first unit, second unit, etc? Draw these demand curves on a graph. Which sector is willing to pay the most for the first unit of carbon emissions?
@@ -206,6 +221,7 @@ ccostcap<- integrate(sectorcpff, 0, 100)
 #2743.63
 
 totalcostcap <- acostcap$value + bcostcap$value + ccostcap$value
+totalcostcap # 6698.883 
 
 #find total cost under new policy: A would go to 80, B would go to 100, C would go to 120
 
@@ -240,21 +256,26 @@ abatementgraph
 
 #taxrevenue is number of carbon units that are left after 300 are abated times the tax 
 taxrevenue<- 300*aggmca(300) 
+taxrevenue # 11827.97 
 
 # in order to look at benefit, look at demand curves, the benefit is going to be the area under the curve up until the intersect of the tax price and the curve, minus the cost of the tax on each unit 
 
 cpoltax <- curve_intersect(carbonprice, demand_C, empirical = FALSE, domain=c(0,200)) # how much they are going to pollute, x= 154.8305
 cpolbenefittax<- integrate(demand_C, 0, cpoltax$x)
-cnetbentax<- cpolbenefittax$value - (cpoltax$x*cpoltax$y)
+cnetbentax<- cpolbenefittax$value - (cpoltax$x*cpoltax$y) # 9395.131
 
 apoltax <- curve_intersect(carbonprice, demand_A, empirical = FALSE, domain=c(0,200)) # how much they are going to pollute, x= 96.66511
 apolbenefittax<- integrate(demand_A, 0, apoltax$x)
-anetbentax<- apolbenefittax$value - (apoltax$x*apoltax$y)
+anetbentax<- apolbenefittax$value - (apoltax$x*apoltax$y) # 2695.047
 
 
 bpoltax <- curve_intersect(carbonprice, demand_B, empirical = FALSE, domain=c(0,200)) # how much they are going to pollute, x= 48.50442
 bpolbenefittax<- integrate(demand_B, 0, bpoltax$x)
-bnetbentax<- bpolbenefittax$value - (bpoltax$x*bpoltax$y)
+bnetbentax<- bpolbenefittax$value - (bpoltax$x*bpoltax$y) # 233.7908 
+
+totaltaxben <- cnetbentax +anetbentax + bnetbentax
+totaltaxben # 12323.97
+
 #intersection of c with carbonprice 
 intersectc <- curve_intersect(carbonprice, sectorcpff, empirical = FALSE, domain=c(0,200)) 
 #cost for sector c is integral of the curve up until x intercept 
@@ -265,8 +286,6 @@ ctaxcost<- integrate(sectorcpff, 0, intersectc$x)
 #intersection of a with carbonprice 
 intersecta<-curve_intersect(carbonprice, sectorapff, empirical = FALSE, domain=c(0,300)) 
 #cost for sector a is integral of the curve up until x intercept 
-
-
 ataxcost<- integrate(sectorapff, 0, intersecta$x) 
 # ataxcost = 1282.612
 
@@ -278,7 +297,7 @@ btaxcost <- integrate(sectorbpff, 0, intersectb$x)
 # btaxcost = 3692.271
 
 #totaltax cost (unsure about this)
-totaltaxcost <- ataxcost$value + btaxcost$value +ctaxcost$value
+totaltaxcost <- ataxcost$value + btaxcost$value +ctaxcost$value #5879.812
 ```
 
 ```{r #3c}
@@ -288,11 +307,11 @@ apermitneed <- apoltax$x-80
 
 cpermitneed <- cpoltax$x - 120
 
-atradebenefit <-apolbenefittax$value - apermitneed*aggmca(300)
+atradebenefit <-apolbenefittax$value - apermitneed*aggmca(300) #5849.173
 
-ctradebenefit <- cpolbenefittax$value -cpermitneed*aggmca(300)
+ctradebenefit <- cpolbenefittax$value -cpermitneed*aggmca(300) #14126.32 
 
-btradebenefit <- bpolbenefittax$value + cpermitneed*aggmca(300)+ apermitneed*aggmca(300)
+btradebenefit <- bpolbenefittax$value + cpermitneed*aggmca(300)+ apermitneed*aggmca(300) # 4176.449 
 
 #total cost for country X to abate is same as for tax. 
 ```
@@ -320,20 +339,21 @@ newaggmca<- function(x){(x+sumintoverslope)/suminverslopes}
 newaggmca(300)# new carbon price is 29.80249
 
 newcarbonprice<- function(x){x=newaggmca(300)}
+
 newainter<- curve_intersect(newcarbonprice, demand_A, empirical = FALSE, domain=c(0,200))
-anewpolbenefittax<- integrate(demand_A, 0, newainter$x)
+anewpolbenefittax<- integrate(demand_A, 0, newainter$x) #7083.733
 
 
 newbinter<- curve_intersect(newcarbonprice, demand_B, empirical = FALSE, domain=c(0,200))
-bnewpolbenefittax<- integrate(demand_B, 0, newbinter$x)
+bnewpolbenefittax<- integrate(demand_B, 0, newbinter$x) #3822.345
 
 
 newcinter<- curve_intersect(newcarbonprice, demand_C, empirical = FALSE, domain=c(0,200))
-cnewpolbenefittax<- integrate(demand_C, 0, newcinter$x)
+cnewpolbenefittax<- integrate(demand_C, 0, newcinter$x) #15924.58
 
 
 newdinter<- curve_intersect(newcarbonprice, demand_D, empirical = FALSE, domain=c(0,300))
-dnewpolbenefittax<- integrate(demand_D, 0, newdinter$x)
+dnewpolbenefittax<- integrate(demand_D, 0, newdinter$x) #13074.99
 
 a2permitneed <- newainter$x-80
 
@@ -341,20 +361,22 @@ c2permitneed <- newcinter$x - 120
 
 a2permitneed+c2permitneed #need 80.45801 permits 
 
-(300-newdinter$x)+(100-newbinter$x)# have 80.45 permits to sell
+(300-newdinter$x)+(100-newbinter$x) #have 80.45 permits to sell
 
 
 
-anewtradebenefit <-anewpolbenefittax$value - a2permitneed*newaggmca(300)
+anewtradebenefit <-anewpolbenefittax$value - a2permitneed*newaggmca(300) # 6089.844 
 
-cnewtradebenefit <-cnewpolbenefittax$value - c2permitneed*newaggmca(300)
+cnewtradebenefit <-cnewpolbenefittax$value - c2permitneed*newaggmca(300) # 14520.62 
 
-bnewtradebenefit<- bnewpolbenefittax$value + (100-newbinter$x)*newaggmca(300)
+bnewtradebenefit<- bnewpolbenefittax$value + (100-newbinter$x)*newaggmca(300) #3913.872 
+
+xtradebenefit <- anewtradebenefit + bnewtradebenefit + cnewtradebenefit #24,524.33
 
 
-dlonelybenefit<- integrate(demand_D, 0,300)
+dlonelybenefit<- integrate(demand_D, 0,300) 
 
-dtradebenefit <- dnewpolbenefittax$value +(300-newdinter$x)*newaggmca(300) # also worth it for D because by trading they benefit 15381.31 whereas bythemselves they benefit 14602.99
+dtradebenefit <- dnewpolbenefittax$value +(300-newdinter$x)*newaggmca(300) # also worth it for D because by trading they benefit 15,381.31 whereas bythemselves they benefit 14,602.99
 
 ```
 
@@ -387,10 +409,6 @@ totalyemissions<- newdinter$x
 # 5c) What advice can you give country X and country Y about the desirability of allowing international trade of carbon emissions credits?
 
 #Allowing international trade of carbon emissions credits will lower the cost of a single carbon credit, leading to the most economically efficient sollution. However this doesn't capture the impacts of local air pollution. In country X for example, entering an international carbon cap and trade market will actually lead to a higher impact of local air pollution (377 vs 300) whereas for country Y, entering the international carbon cap and trade market will lead to lower local air pollution (222 vs 300). Country Y will only see benefits to entering an international carbon cap & trade market whereas Country X will have decide if it wants to be more economically efficient but also suffer more from air pollution. 
-
-
-
-
 
 
 ```
