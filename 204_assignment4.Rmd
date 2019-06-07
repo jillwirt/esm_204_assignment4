@@ -220,7 +220,7 @@ totalcostcap <- acostcap$value + bcostcap$value + ccostcap$value
 #aggregate marginal abatement cost 
 dividedby<- (1/A_abatement+1/B_abatement+1/C_abatement)
 intercept<- ((aregress$coefficients[1]/-aregress$coefficients[2])-B_intercept/B_abatement +C_intercept/-C_abatement)
-aggmca <- function(x){(x+(-intercept))/dividedby}
+aggmca <- function(x){(x+(-intercept))/(dividedby)}
 carbonprice <- function(x){aggmca(300)}
 
 #take aggmca (300) to get price: $39.4
@@ -239,7 +239,13 @@ abatementgraph <- ggplot(sector_data)+
 abatementgraph
 
 #taxrevenue is number of carbon units that are left after 300 are abated times the tax 
-taxrevenue<- 300*aggmca(300)
+taxrevenue<- 300*aggmca(300) 
+
+# in order to look at benefit, look at demand curves, the benefit is going to be the area under the curve up until the intersect of the tax price and the curve, minus the cost of the tax on each unit 
+
+cpoltax <- curve_intersect(carbonprice, demand_C, empirical = FALSE, domain=c(0,200)) # how much they are going to pollute, x= 154.8305
+cpolbenefittax<- integrate(demand_C, 0, cpoltax$x)
+cnetbentax<- cpolbenefittax$value - (cpoltax$x*cpoltax$y)
 
 #intersection of c with carbonprice 
 intersectc <- curve_intersect(carbonprice, sectorcpff, empirical = FALSE, domain=c(0,200)) 
