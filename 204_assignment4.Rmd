@@ -303,13 +303,41 @@ btradebenefit <- bpolbenefittax$value + cpermitneed*aggmca(300)+ apermitneed*agg
 
 ```{r #4}
 
+#aggregate demand curve of a, b, c, d, 
+
+aggdemand<- function(q){(-1/11.88819)*q+59.27741}
+
+aggdemand(300)# new carbon price is 34.04228 
+
+newcarbonprice<- function(x){x=aggdemand(300)}
+newainter<- curve_intersect(newcarbonprice, demand_A, empirical = FALSE, domain=c(0,200))
+anewpolbenefittax<- integrate(demand_A, 0, newainter$x)
+anewnetbentax<- anewpolbenefittax$value - (newainter$x*newainter$y)
+
+newbinter<- curve_intersect(newcarbonprice, demand_B, empirical = FALSE, domain=c(0,200))
+bnewpolbenefittax<- integrate(demand_B, 0, newbinter$x)
+bnewnetbentax<- bnewpolbenefittax$value - (newbinter$x*newbinter$y)
+
+newcinter<- curve_intersect(newcarbonprice, demand_C, empirical = FALSE, domain=c(0,200))
+cnewpolbenefittax<- integrate(demand_C, 0, newcinter$x)
+cnewnetbentax<- cnewpolbenefittax$value - (newcinter$x*newcinter$y)
+
+newdinter<- curve_intersect(newcarbonprice, demand_D, empirical = FALSE, domain=c(0,300))
+
+a2permitneed <- newainter$x-80
+
+c2permitneed <- newcinter$x - 120
+
+a2permitneed+c2permitneed #need 67.69892 permits 
+
+(300-newdinter$x)+(100-newbinter$x)# have 118.1023 permits to sell
+
+#too many permits in market, not worth it to invite country Y to carbon trade market because either B would be left with permits or D would
 
 
+dlonelybenefit<- integrate(demand_D, 0,300)
 
-
-
-
-
+dtradebenefit <- dlonelybenefit$value-(300-newdinter$x)*aggdemand(300) # if they sell all permits, not even worth it because they make 14602.99 by themselves and only 11413.29 if they trade and sell all. 
 
 ```
 
