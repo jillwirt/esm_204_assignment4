@@ -363,7 +363,19 @@ a2permitneed+c2permitneed #need 80.45801 permits
 
 (300-newdinter$x)+(100-newbinter$x) #have 80.45 permits to sell
 
+#how much are they each going to abate
 
+aba<- curve_intersect(sectorapff, newcarbonprice, empirical = FALSE, domain=c(0,300))
+abb<- curve_intersect(sectorbpff, newcarbonprice, empirical = FALSE, domain=c(0,300))
+abc<- curve_intersect(sectorcpff, newcarbonprice, empirical = FALSE, domain=c(0,300))
+abd<- curve_intersect(sectordpff, newcarbonprice, empirical = FALSE, domain=c(0,300))
+
+#their abatement costs 
+
+tradeabcosta<- integrate(sectorapff, 0, aba$x)
+tradeabcostb<- integrate(sectorbpff, 0, abb$x)
+tradeabcostc<- integrate(sectorcpff, 0, abc$x)
+tradeabcostd<- integrate(sectordpff, 0, abd$x)
 
 anewtradebenefit <-anewpolbenefittax$value - a2permitneed*newaggmca(300) # 6089.844 
 
@@ -374,7 +386,7 @@ bnewtradebenefit<- bnewpolbenefittax$value + (100-newbinter$x)*newaggmca(300) #3
 xtradebenefit <- anewtradebenefit + bnewtradebenefit + cnewtradebenefit #24,524.33
 
 
-dlonelybenefit<- integrate(demand_D, 0,300) 
+dlonelybenefit<- integrate(demand_D, 0,300)  
 
 dtradebenefit <- dnewpolbenefittax$value +(300-newdinter$x)*newaggmca(300) # also worth it for D because by trading they benefit 15,381.31 whereas bythemselves they benefit 14,602.99
 
